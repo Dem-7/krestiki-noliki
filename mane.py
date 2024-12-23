@@ -7,6 +7,9 @@ window.geometry("300x350")
 current_player = "X"
 buttons = []
 def on_click(row, col):
+   global current_player
+   buttons[row][col]['text'] = current_player
+def on_click(row, col):
     pass
 for i in range(3):
     row = []
