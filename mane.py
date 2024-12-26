@@ -1,13 +1,15 @@
+
 import tkinter as tk
 from tkinter import messagebox
 
 window = tk.Tk()
 window.title("Крестики-нолики")
-window.geometry("300x350")
+window.geometry("300x400")
 
 current_player = "X"
 buttons = []
-
+player_scores = {"X": 0, "O": 0}
+max_wins = 3
 
 def check_winner():
     for i in range(3):
@@ -23,14 +25,12 @@ def check_winner():
 
     return False
 
-
-def is_draw():
+def check_draw():
     for row in buttons:
-        for button in row:
-            if button["text"] == "":
+        for btn in row:
+            if btn["text"] == "":
                 return False
     return True
-
 
 def on_click(row, col):
     global current_player
@@ -41,16 +41,35 @@ def on_click(row, col):
     buttons[row][col]['text'] = current_player
 
     if check_winner():
+        player_scores[current_player] += 1
+        update_score()
         messagebox.showinfo("Игра окончена", f"Игрок {current_player} победил!")
-        return
-
-    if is_draw():
+        reset_game()
+    elif check_draw():
         messagebox.showinfo("Игра окончена", "Ничья!")
-        return
+        reset_game()
+    else:
+        current_player = "O" if current_player == "X" else "X"
 
-    current_player = "0" if current_player == "X" else "X"
+def reset_game():
+    for row in buttons:
+        for btn in row:
+            btn["text"] = ""
+    global current_player
+    current_player = "X"  # Сначала всегда крестик
 
+def update_score():
+    score_label.config(text=f"Счет: X {player_scores['X']} - O {player_scores['O']}")
+    if player_scores[current_player] >= max_wins:
+        messagebox.showinfo("Игра завершена", f"Игрок {current_player} выиграл {max_wins} раз(а)!")
+        reset_scores()
 
+def reset_scores():
+    player_scores["X"] = 0
+    player_scores["O"] = 0
+    update_score()
+
+# Создание интерфейса
 for i in range(3):
     row = []
     for j in range(3):
@@ -59,5 +78,13 @@ for i in range(3):
         row.append(btn)
     buttons.append(row)
 
-window.mainloop()
+score_label = tk.Label(window, text="Счет: X 0 - O 0", font=("Arial", 14))
+score_label.grid(row=3, column=0, columnspan=3)
 
+reset_button = tk.Button(window
+
+
+, text="Сбросить игру", font=("Arial", 14), command=reset_game)
+reset_button.grid(row=4, column=0, columnspan=3)
+
+window.mainloop()
